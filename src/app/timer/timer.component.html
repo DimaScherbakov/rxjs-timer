@@ -1,8 +1,8 @@
 <div class="wrapper">
   <div id="time">
-    <div id="hh">{{ startTime.getHours() }}</div>
-    <div id="mm">{{ startTime.getMinutes() }}</div>
-    <div id="ss">{{ startTime.getSeconds() }}</div>
+    <div id="hh">{{ currentTime.getHours() }}</div>
+    <div id="mm">{{ currentTime.getMinutes() }}</div>
+    <div id="ss">{{ currentTime.getSeconds() }}</div>
   </div>
   <div id="controls">
     <button id="start-stop" (click)="startStop()">start/stop</button>

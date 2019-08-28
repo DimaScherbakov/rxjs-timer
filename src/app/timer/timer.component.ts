@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable, interval } from 'rxjs';
-import { takeWhile } from 'rxjs/operators';
+import { takeWhile, tap, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-timer',
@@ -8,12 +8,14 @@ import { takeWhile } from 'rxjs/operators';
   styleUrls: ['./timer.component.css']
 })
 export class TimerComponent implements OnInit {
-  startTime = new Date(0, 0, 0, 0, 0, 3);
+  startTime = new Date(0, 0, 0, 0, 0, 5);
+  currentTime = new Date();
   timer$: Observable<any>;
-
+  timerOnGoing;
   constructor() {}
 
   ngOnInit() {
+    this.setCurrentTime();
     this.timer$ = this.createTimer(this.startTime);
   }
   createTimer(startTime) {
@@ -21,14 +23,38 @@ export class TimerComponent implements OnInit {
   }
 
   startStop() {
-    this.timer$
-      .pipe(takeWhile(data => this.isTimerStopped(this.startTime)))
-      .subscribe(value => {
-        this.startTime.setSeconds(this.startTime.getSeconds() - 1);
-        console.log(this.startTime);
-      });
+    // toggle start/stop
+    if (this.timerOnGoing && !this.timerOnGoing.isStopped) {
+      this.timerOnGoing.unsubscribe();
+      this.currentTime = this.startTime;
+      return;
+    }
+    this.timerOnGoing = this.timer$
+      // stop timer if it's gone
+      .pipe(takeWhile(data => this.isTimerStopped(this.currentTime)))
+      // set start time after timer is gone
+      .pipe(
+        tap({
+          complete: () => {
+            this.setCurrentTime();
+            this.timerOnGoing.unsubscribe();
+          }
+        })
+      )
+      // decrease time
+      .pipe(
+        map(() => {
+          this.currentTime.setSeconds(this.currentTime.getSeconds() - 1);
+        })
+      )
+      .subscribe(() => {});
   }
   isTimerStopped(time: Date) {
     return time.getHours() + time.getMinutes() + time.getSeconds() !== 0;
+  }
+  setCurrentTime() {
+    this.currentTime.setHours(this.startTime.getHours());
+    this.currentTime.setMinutes(this.startTime.getMinutes());
+    this.currentTime.setSeconds(this.startTime.getSeconds());
   }
 }
