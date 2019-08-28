@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgModule } from '@angular/core';
+
 import { Observable, interval } from 'rxjs';
 import { takeWhile, tap, map } from 'rxjs/operators';
 
@@ -8,7 +9,7 @@ import { takeWhile, tap, map } from 'rxjs/operators';
   styleUrls: ['./timer.component.css']
 })
 export class TimerComponent implements OnInit {
-  startTime = new Date(0, 0, 0, 0, 0, 5);
+  startTime = new Date(0, 0, 0, 0, 0, 0);
   currentTime = new Date();
   timer$: Observable<any>;
   timerOnGoing;
@@ -24,6 +25,18 @@ export class TimerComponent implements OnInit {
     return interval(1000);
   }
 
+  getTimer(event) {
+    this.startTime = new Date(0, 0, 0, event.hh, event.mm, event.ss);
+    this.setCurrentTime();
+  }
+  startStop() {
+    // toggle start/stop
+    if (this.isReset) {
+      this.isReset = false;
+      this.setCurrentTime();
+    }
+    this.isStarted ? this.stop() : this.start();
+  }
   start() {
     this.isStarted = true;
     this.timerOnGoing = this.timer$
@@ -53,22 +66,7 @@ export class TimerComponent implements OnInit {
       this.timerOnGoing.unsubscribe();
     }
   }
-  startStop() {
-    // toggle start/stop
-    if (this.isReset) {
-      this.isReset = false;
-      this.setCurrentTime();
-    }
-    this.isStarted ? this.stop() : this.start();
-  }
-  isTimerStopped(time: Date) {
-    return time.getHours() + time.getMinutes() + time.getSeconds() !== 0;
-  }
-  setCurrentTime() {
-    this.currentTime.setHours(this.startTime.getHours());
-    this.currentTime.setMinutes(this.startTime.getMinutes());
-    this.currentTime.setSeconds(this.startTime.getSeconds());
-  }
+
   reset() {
     this.isStarted = false;
     this.isReset = true;
@@ -84,5 +82,17 @@ export class TimerComponent implements OnInit {
       this.isStarted = false;
       this.timerOnGoing.unsubscribe();
     }
+  }
+  isTimerStopped(time: Date) {
+    return time.getHours() + time.getMinutes() + time.getSeconds() !== 0;
+  }
+  setCurrentTime() {
+    this.currentTime.setHours(this.startTime.getHours());
+    this.currentTime.setMinutes(this.startTime.getMinutes());
+    this.currentTime.setSeconds(this.startTime.getSeconds());
+  }
+
+  addZeroBefore(n) {
+    return (n < 10 ? '0' : '') + n;
   }
 }

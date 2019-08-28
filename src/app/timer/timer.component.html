@@ -1,8 +1,13 @@
 <div class="wrapper">
+  <div id="get-time">
+    <app-get-start-time (timerEvent)="getTimer($event)"></app-get-start-time>
+  </div>
   <div id="time">
-    <div id="hh">{{ currentTime.getHours() }}</div>
-    <div id="mm">{{ currentTime.getMinutes() }}</div>
-    <div id="ss">{{ currentTime.getSeconds() }}</div>
+    <div id="hh">{{ addZeroBefore(currentTime.getHours()) }}</div>
+    <span>:</span>
+    <div id="mm">{{ addZeroBefore(currentTime.getMinutes()) }}</div>
+    <span>:</span>
+    <div id="ss">{{ addZeroBefore(currentTime.getSeconds()) }}</div>
   </div>
   <div id="controls">
     <button id="start-stop" (click)="startStop()">start/stop</button>
