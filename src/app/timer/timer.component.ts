@@ -36,7 +36,6 @@ export class TimerComponent implements OnInit {
       .pipe(
         tap({
           complete: () => {
-            debugger;
             this.setCurrentTime();
             this.timerOnGoing.unsubscribe();
           }
@@ -54,7 +53,6 @@ export class TimerComponent implements OnInit {
     return time.getHours() + time.getMinutes() + time.getSeconds() !== 0;
   }
   setCurrentTime() {
-    debugger;
     this.currentTime.setHours(this.startTime.getHours());
     this.currentTime.setMinutes(this.startTime.getMinutes());
     this.currentTime.setSeconds(this.startTime.getSeconds());
@@ -65,7 +63,6 @@ export class TimerComponent implements OnInit {
     this.currentTime.setSeconds(0);
     if (this.timerOnGoing) {
       this.timerOnGoing.unsubscribe();
-      // this.timerOnGoing.isStopped = false;
     }
   }
 }
