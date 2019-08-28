@@ -24,9 +24,9 @@ export class TimerComponent implements OnInit {
 
   startStop() {
     // toggle start/stop
+    this.setCurrentTime();
     if (this.timerOnGoing && !this.timerOnGoing.isStopped) {
       this.timerOnGoing.unsubscribe();
-      this.currentTime = this.startTime;
       return;
     }
     this.timerOnGoing = this.timer$
@@ -56,5 +56,13 @@ export class TimerComponent implements OnInit {
     this.currentTime.setHours(this.startTime.getHours());
     this.currentTime.setMinutes(this.startTime.getMinutes());
     this.currentTime.setSeconds(this.startTime.getSeconds());
+  }
+  reset() {
+    this.currentTime.setHours(0);
+    this.currentTime.setMinutes(0);
+    this.currentTime.setSeconds(0);
+    if (this.timerOnGoing) {
+      this.timerOnGoing.unsubscribe();
+    }
   }
 }
