@@ -12,6 +12,8 @@ export class TimerComponent implements OnInit {
   currentTime = new Date();
   timer$: Observable<any>;
   timerOnGoing;
+  isStarted;
+  isReset;
   constructor() {}
 
   ngOnInit() {
@@ -22,13 +24,8 @@ export class TimerComponent implements OnInit {
     return interval(1000);
   }
 
-  startStop() {
-    // toggle start/stop
-    this.setCurrentTime();
-    if (this.timerOnGoing && !this.timerOnGoing.isStopped) {
-      this.timerOnGoing.unsubscribe();
-      return;
-    }
+  start() {
+    this.isStarted = true;
     this.timerOnGoing = this.timer$
       // stop timer if it's gone
       .pipe(takeWhile(data => this.isTimerStopped(this.currentTime)))
@@ -37,7 +34,7 @@ export class TimerComponent implements OnInit {
         tap({
           complete: () => {
             this.setCurrentTime();
-            this.timerOnGoing.unsubscribe();
+            this.isStarted = false;
           }
         })
       )
@@ -49,6 +46,21 @@ export class TimerComponent implements OnInit {
       )
       .subscribe(() => {});
   }
+  stop() {
+    this.isStarted = false;
+    this.setCurrentTime();
+    if (this.timerOnGoing) {
+      this.timerOnGoing.unsubscribe();
+    }
+  }
+  startStop() {
+    // toggle start/stop
+    if (this.isReset) {
+      this.isReset = false;
+      this.setCurrentTime();
+    }
+    this.isStarted ? this.stop() : this.start();
+  }
   isTimerStopped(time: Date) {
     return time.getHours() + time.getMinutes() + time.getSeconds() !== 0;
   }
@@ -58,6 +70,8 @@ export class TimerComponent implements OnInit {
     this.currentTime.setSeconds(this.startTime.getSeconds());
   }
   reset() {
+    this.isStarted = false;
+    this.isReset = true;
     this.currentTime.setHours(0);
     this.currentTime.setMinutes(0);
     this.currentTime.setSeconds(0);
